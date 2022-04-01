@@ -11,6 +11,10 @@ const whoamiCallback = async ({ shortcut, ack, client, context }) => {
         if (context.hasAuthorized) {
             const conn = context.sfconnection;
             const currentuser = await conn.identity();
+
+            console.log('currentuser: ' + currentuser);
+            console.log('currentuser.username: ' + currentuser.username);
+            console.log('conn.instanceUrl: ' + conn.instanceUrl);
             // Call the views.open method using one of the built-in WebClients
             await client.views.open({
                 trigger_id: shortcut.trigger_id,

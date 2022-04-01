@@ -30,6 +30,7 @@ class ServerToServerAuth {
             });
             return this.conn;
         } catch (e) {
+            console.log(e);
             throw new Error(
                 `Can't establish connection with Salesforce, reason: ${e.message}`
             );
