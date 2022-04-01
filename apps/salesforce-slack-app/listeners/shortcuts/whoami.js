@@ -7,6 +7,7 @@ const {
 
 const whoamiCallback = async ({ shortcut, ack, client, context }) => {
     try {
+        console.log('context: ' + context);
         await ack();
         if (context.hasAuthorized) {
             const conn = context.sfconnection;
