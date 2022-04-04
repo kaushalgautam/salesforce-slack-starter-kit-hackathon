@@ -43,7 +43,7 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
                         });
                     }
 
-                    let view = Modal({ title: 'PTO Summary' })
+                    let viewJson = Modal({ title: 'PTO Summary' })
                         .callbackId('showPTOSummary')
                         .blocks(
                             Blocks.Section({
@@ -59,11 +59,7 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
                     client.views.open({
                         // Use the user ID associated with the shortcut
                         trigger_id: shortcut.trigger_id,
-                        view: myTravelRequestsScreen(
-                            travelRequests,
-                            currentuser.display_name,
-                            conn.instanceUrl
-                        )
+                        view: viewJson
                     });
                 } else {
                     console.log('something went wrong');
