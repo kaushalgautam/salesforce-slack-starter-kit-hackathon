@@ -4,7 +4,7 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
     // shortcut is getting called
     // client = use slack api
     // content = stores current session data + connection object and flag as well
-    ack();
+    await ack();
     console.log(client);
     console.log('-----------------------------------------------');
     console.log(shortcut);
@@ -27,6 +27,7 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
             if (err) {
                 return console.error(err);
             }
+            console.log(res);
             let ptoSummaryText = '';
             let projectWisePTOs = {};
             if (res.lenght > 0) {
@@ -51,7 +52,7 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
                     });
                 }
 
-                return Modal({ title: 'PTO Summary' })
+                let view = Modal({ title: 'PTO Summary' })
                     .callbackId('showPTOSummary')
                     .blocks(
                         Blocks.Section({
@@ -63,15 +64,20 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
                         Blocks.Section({ text: ptoSummaryText })
                     ])
                     .buildToJSON();
-            } else {
-                return Modal({ title: 'PTO Summary' })
-                    .callbackId('showPTOSummary')
-                    .blocks(
-                        Blocks.Section({
-                            text: 'None of your teammates have any upcoming PTOs. Maybe you should be on one :palm_tree:'
-                        })
+
+                await client.views.open({
+                    // Use the user ID associated with the shortcut
+                    trigger_id: shortcut.trigger_id,
+                    view: myTravelRequestsScreen(
+                        travelRequests,
+                        currentuser.display_name,
+                        conn.instanceUrl
                     )
-                    .buildToJSON();
+                });
+            } else {
+                console.log('something went wrong');
+                console.log('res');
+                console.log(res);
             }
         }
     );
