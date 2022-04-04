@@ -5,21 +5,10 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
     // client = use slack api
     // content = stores current session data + connection object and flag as well
     await ack();
-    console.log(client);
-    console.log('-----------------------------------------------');
     console.log(shortcut);
     console.log('-----------------------------------------------');
-    console.log(context);
-    console.log('-----------------------------------------------');
-
     const conn = context.sfconnection;
     const currentuser = await conn.identity();
-    console.log('currentuser');
-    console.log(currentuser);
-    console.log('-----------------------------------------------');
-    console.log('userid');
-    console.log(currentuser.user_id);
-    console.log('-----------------------------------------------');
 
     await conn.apex.get(
         '/PTOSummary/' + currentuser.user_id,
