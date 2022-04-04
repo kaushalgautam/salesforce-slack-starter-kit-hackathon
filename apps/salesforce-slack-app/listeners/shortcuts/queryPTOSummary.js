@@ -65,7 +65,7 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
                     ])
                     .buildToJSON();
 
-                await client.views.open({
+                client.views.open({
                     // Use the user ID associated with the shortcut
                     trigger_id: shortcut.trigger_id,
                     view: myTravelRequestsScreen(
