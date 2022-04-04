@@ -75,16 +75,6 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
             }
         }
     );
-
-    return Modal({ title: 'Edit Team' })
-        .callbackId('showPTOSummary')
-        .blocks(
-            Blocks.Section({
-                text: "Hey there! Here's a summary of your teammates' PTOs "
-            })
-        )
-        .blocks([Blocks.Divider(), Blocks.Section({ text: ptoSummaryText })])
-        .buildToJSON();
 };
 
 module.exports = { getPTOSummary };
