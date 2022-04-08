@@ -77,17 +77,48 @@ const getPTOSummaryString = (response) => {
     textString = '';
     Object.values(TIME_PERIODS).forEach((time) => {
         if (!time in sortedByWeek) return;
-        textString += `${time}\n`;
-
-        /*     console.log(sortedByWeek[time]) */
-
-        for (const project in sortedByWeek[time]) {
-            textString += `  For ${project}: \n`;
-            sortedByWeek[time][project].forEach((ptoEntry) => {
-                textString += `    ${ptoEntry.name} from ${ptoEntry.from} to ${ptoEntry.to} \n`;
-            });
+        switch (time) {
+            case TIME_PERIODS.THIS_WEEK:
+                textString += `:bangbang: ${time}\n`;
+                for (const project in sortedByWeek[time]) {
+                    textString += `  For ${project}: \n`;
+                    sortedByWeek[time][project].forEach((ptoEntry) => {
+                        textString += `   :calendar: ${
+                            ptoEntry.name
+                        } from ${new moment(ptoEntry.from).format(
+                            'dddd'
+                        )} for ${ptoEntry.days} day(s) \n`;
+                    });
+                }
+                break;
+            case TIME_PERIODS.NEXT_WEEK:
+                textString += `:heavy_exclamation_mark: ${time}\n`;
+                for (const project in sortedByWeek[time]) {
+                    textString += `  For ${project}: \n`;
+                    sortedByWeek[time][project].forEach((ptoEntry) => {
+                        textString += `   :calendar: ${
+                            ptoEntry.name
+                        } from ${new moment(ptoEntry.from).format(
+                            'dddd'
+                        )} for ${ptoEntry.days} day(s) \n`;
+                    });
+                }
+                break;
+            case TIME_PERIODS.REST_OF_THE_MONTH:
+                textString += `:o: ${time}\n`;
+                for (const project in sortedByWeek[time]) {
+                    textString += `  For ${project}: \n`;
+                    sortedByWeek[time][project].forEach((ptoEntry) => {
+                        textString += `   :calendar: ${
+                            ptoEntry.name
+                        } from ${new moment(ptoEntry.from).format(
+                            'dddd'
+                        )} for ${ptoEntry.days} day(s) \n`;
+                    });
+                }
+                break;
         }
-        textString += `___________________________________________________________\n`;
+        textString += `\n`;
     });
 
     console.log(textString);
@@ -117,27 +148,6 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
                 let ptoSummaryText = '';
                 // let projectWisePTOs = {};
                 if (res.length > 0) {
-                    // res.forEach((pto) => {
-                    //     if (!projectWisePTOs[pto.ProjectName]) {
-                    //         projectWisePTOs[pto.ProjectName] = [];
-                    //     }
-                    //     projectWisePTOs[pto.ProjectName].push({
-                    //         Name: pto.PTOEntry.Owner.Name,
-                    //         NumberOfDays: pto.PTOEntry.No_of_PTO_Days__c,
-                    //         From: pto.PTOEntry.Start_Date__c,
-                    //         To: pto.PTOEntry.End_Date__c
-                    //     });
-                    // });
-
-                    // console.log(projectWisePTOs);
-
-                    // for (const proj in projectWisePTOs) {
-                    //     ptoSummaryText += `:file_folder: ${proj}: \n`;
-                    //     projectWisePTOs[proj].forEach((ptoEntry) => {
-                    //         ptoSummaryText += `:calendar: ${ptoEntry.Name} is on PTO for ${ptoEntry.NumberOfDays} days from ${ptoEntry.From} to ${ptoEntry.To}. \n`;
-                    //     });
-                    // }
-
                     ptoSummaryText = getPTOSummaryString(res);
 
                     let viewJson = Modal({ title: 'PTO Summary' })
@@ -154,11 +164,40 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
                         view: viewJson
                     });
                 } else {
-                    console.log('something went wrong');
-                    console.log('res');
-                    console.log(res);
+                    let viewJson = Modal({ title: 'PTO Summary' })
+                        .callbackId('showPTOSummary')
+                        .blocks([
+                            Blocks.Divider(),
+                            Blocks.Section({
+                                text: 'No Team Members on PTO in this month.'
+                            })
+                        ])
+                        .buildToJSON();
+
+                    client.views.open({
+                        // Use the user ID associated with the shortcut
+                        trigger_id: shortcut.trigger_id,
+                        view: viewJson
+                    });
                 }
             } catch (error) {
+                let viewJson = Modal({ title: 'PTO Summary' })
+                    .callbackId('showPTOSummary')
+                    .blocks([
+                        Blocks.Divider(),
+                        Blocks.Section({
+                            text:
+                                'Something went Wrong \n' +
+                                JSON.stringify(error)
+                        })
+                    ])
+                    .buildToJSON();
+
+                client.views.open({
+                    // Use the user ID associated with the shortcut
+                    trigger_id: shortcut.trigger_id,
+                    view: viewJson
+                });
                 console.error(error);
             }
         }
