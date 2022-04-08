@@ -77,16 +77,46 @@ const getPTOSummaryString = (response) => {
     textString = '';
     Object.values(TIME_PERIODS).forEach((time) => {
         if (!time in sortedByWeek) return;
-        textString += `:calendar: ${time}\n`;
-        for (const project in sortedByWeek[time]) {
-            textString += ` :factory: For ${project}: \n`;
-            sortedByWeek[time][project].forEach((ptoEntry) => {
-                textString += `   :arrow_right: ${
-                    ptoEntry.name
-                } from ${new moment(ptoEntry.from).format('dddd')} for ${
-                    ptoEntry.days
-                } day(s) \n`;
-            });
+        switch (time) {
+            case TIME_PERIODS.THIS_WEEK:
+                textString += `:bangbang: ${time}\n`;
+                for (const project in sortedByWeek[time]) {
+                    textString += `  For ${project}: \n`;
+                    sortedByWeek[time][project].forEach((ptoEntry) => {
+                        textString += `   :calendar: ${
+                            ptoEntry.name
+                        } from ${new moment(ptoEntry.from).format(
+                            'dddd'
+                        )} for ${ptoEntry.days} day(s) \n`;
+                    });
+                }
+                break;
+            case TIME_PERIODS.NEXT_WEEK:
+                textString += `:heavy_exclamation_mark: ${time}\n`;
+                for (const project in sortedByWeek[time]) {
+                    textString += `  For ${project}: \n`;
+                    sortedByWeek[time][project].forEach((ptoEntry) => {
+                        textString += `   :calendar: ${
+                            ptoEntry.name
+                        } from ${new moment(ptoEntry.from).format(
+                            'dddd'
+                        )} for ${ptoEntry.days} day(s) \n`;
+                    });
+                }
+                break;
+            case TIME_PERIODS.REST_OF_THE_MONTH:
+                textString += `:o: ${time}\n`;
+                for (const project in sortedByWeek[time]) {
+                    textString += `  For ${project}: \n`;
+                    sortedByWeek[time][project].forEach((ptoEntry) => {
+                        textString += `   :calendar: ${
+                            ptoEntry.name
+                        } from ${new moment(ptoEntry.from).format(
+                            'dddd'
+                        )} for ${ptoEntry.days} day(s) \n`;
+                    });
+                }
+                break;
         }
         textString += `\n`;
     });
