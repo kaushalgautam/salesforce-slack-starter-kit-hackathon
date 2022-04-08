@@ -1,4 +1,5 @@
 const { Modal, Blocks } = require('slack-block-builder');
+var moment = require('moment'); // require
 
 const getPTOSummaryString = (response) => {
     const TIME_PERIODS = {
