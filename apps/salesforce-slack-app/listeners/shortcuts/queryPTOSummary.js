@@ -91,6 +91,8 @@ const getPTOSummaryString = (response) => {
     });
 
     console.log(textString);
+
+    return textString;
 };
 
 const getPTOSummary = async ({ shortcut, ack, client, context }) => {
