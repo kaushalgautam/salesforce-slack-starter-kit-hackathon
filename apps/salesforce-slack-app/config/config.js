@@ -9,6 +9,8 @@ const requiredEnvVars = [
     'PRIVATE_KEY',
     'SF_LOGIN_URL',
     'SF_USERNAME',
+    'AES_KEY',
+    'HMAC_KEY',
     'SLACK_BOT_TOKEN',
     'SLACK_SIGNING_SECRET'
 ];
@@ -45,5 +47,6 @@ const slack = {
 
 module.exports = {
     salesforce,
-    slack
+    slack,
+    hmacKey: process.env.HMAC_KEY
 };
