@@ -19,6 +19,8 @@ const salesforceMessageHandler = async (req, res) => {
     // Check HMAC 256 signature
     // Note: if fields sent in body have decimal digits,
     // the JSON parsing from Apex and Node differs and this may fail
+    console.log(JSON.stringify(req.body));
+    console.log(config.hmacKey);
     const hmac = CryptoJS.HmacSHA256(JSON.stringify(req.body), config.hmacKey);
     const hmacBase64 = CryptoJS.enc.Base64.stringify(hmac);
 
