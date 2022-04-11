@@ -14,46 +14,19 @@ global class Hackathon_PTO_Summary {
 	global static List<PTOSummary> doGet() {
 		RestRequest req = RestContext.request;
 		String userId = req.requestURI.substring(req.requestURI.lastIndexOf('/') + 1);
+		return getPTOSummariesForUser(userId);
+	}
 
-		Map<Id, Project__c> projectMap = new Map<Id, Project__c>();
-		Map<Id, List<Id>> pmIdToProjId = new Map<Id, List<Id>>();
+	public static List<PTOSummary> getPTOSummariesForUser(String userId) {
 		List<PTOSummary> ptoSummaries = new List<PTOSummary>();
+		Map<Id, List<Id>> pmIdToProjId = new Map<Id, List<Id>>();
 
 		// get projects where user is a member
-		// projectmember id to project id store somewhere
-		for (Project_Member__c pm : [
-			SELECT Id, Member__r.Name, Project__c, Project__r.Name, Member__c
-			FROM Project_Member__c
-			WHERE Member__c = :userId AND Project__r.Phase__c NOT IN :invalidProjectPhases AND Project__r.Type__c IN :validProjectTypes
-		]) {
-			Project__c tempProj = new Project__c();
-			tempProj.Id = pm.Project__c;
-			tempProj.Name = pm.Project__r.Name;
-
-			if (!projectMap.containsKey(pm.Project__c)) {
-				projectMap.put(pm.Project__c, tempProj);
-			}
-		}
+		Map<Id, Project__c> projectMap = getRelevantProjectMapForUser(userId);
 		System.debug('projectMap: ' + projectMap);
 
-		// get all project memebers that are relevant
-		for (Project_Member__c pm : [
-			SELECT Id, Member__r.Name, Project__c, Project__r.Name, Member__c
-			FROM Project_Member__c
-			WHERE
-				Project__c IN :projectMap.keySet()
-				AND Member__c != NULL
-				AND Member__c != :userId
-				AND Project__r.Phase__c NOT IN :invalidProjectPhases
-				AND Project__r.Type__c IN :validProjectTypes
-		]) {
-			if (!pmIdToProjId.containsKey(pm.Member__c)) {
-				pmIdToProjId.put(pm.Member__c, new List<Id>());
-			}
-			List<Id> tempProjIdList = pmIdToProjId.get(pm.Member__c);
-			tempProjIdList.add(pm.Project__c);
-			pmIdToProjId.put(pm.Member__c, tempProjIdList);
-		}
+		// get all project memebers that are relevant - exculding where members are the main user
+		pmIdToProjId = getRelevantProjectMembersForProjects(userId, projectMap.keySet());
 		System.debug('pmIdToProjId: ' + pmIdToProjId);
 
 		// get approved ptos of all members that are relevant
@@ -71,14 +44,50 @@ global class Hackathon_PTO_Summary {
 			}
 		}
 
-		System.debug('ptoSummaries: ' + ptoSummaries);
-
 		//System.debug('pmList: ' + pmList);
 		return ptoSummaries;
 	}
 
-	private static string getActiveProjectMembersList(String userId) {
-		return '';
+	public static Map<Id, Project__c> getRelevantProjectMapForUser(String userId) {
+		Map<Id, Project__c> projectMap = new Map<Id, Project__c>();
+		for (Project_Member__c pm : [
+			SELECT Id, Member__r.Name, Project__c, Project__r.Name, Member__c
+			FROM Project_Member__c
+			WHERE Member__c = :userId AND Project__r.Phase__c NOT IN :invalidProjectPhases AND Project__r.Type__c IN :validProjectTypes
+		]) {
+			Project__c tempProj = new Project__c();
+			tempProj.Id = pm.Project__c;
+			tempProj.Name = pm.Project__r.Name;
+
+			if (!projectMap.containsKey(pm.Project__c)) {
+				projectMap.put(pm.Project__c, tempProj);
+			}
+		}
+
+		return projectMap;
+	}
+
+	public static Map<Id, List<Id>> getRelevantProjectMembersForProjects(String userId, Set<Id> projectIds) {
+		Map<Id, List<Id>> pmIdToProjId = new Map<Id, List<Id>>();
+		for (Project_Member__c pm : [
+			SELECT Id, Member__r.Name, Project__c, Project__r.Name, Member__c
+			FROM Project_Member__c
+			WHERE
+				Project__c IN :projectIds
+				AND Member__c != NULL
+				AND Member__c != :userId
+				AND Project__r.Phase__c NOT IN :invalidProjectPhases
+				AND Project__r.Type__c IN :validProjectTypes
+		]) {
+			if (!pmIdToProjId.containsKey(pm.Member__c)) {
+				pmIdToProjId.put(pm.Member__c, new List<Id>());
+			}
+			List<Id> tempProjIdList = pmIdToProjId.get(pm.Member__c);
+			tempProjIdList.add(pm.Project__c);
+			pmIdToProjId.put(pm.Member__c, tempProjIdList);
+		}
+
+		return pmIdToProjId;
 	}
 
 	global class PTOSummary {
