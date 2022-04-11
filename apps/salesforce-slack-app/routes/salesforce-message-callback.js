@@ -1,11 +1,7 @@
 'use strict';
 const CryptoJS = require('crypto-js');
 const persistedClient = require('../store/bolt-web-client');
-const {
-    appendPendingTravelRequestBlock
-} = require('../user-interface/app-home');
 const { Md, Message } = require('slack-block-builder');
-const { authWithSalesforce } = require('../middleware/salesforce-auth');
 const config = require('../config/config');
 
 const salesforceMessageHandler = async (req, res) => {
@@ -42,27 +38,12 @@ const salesforceMessageHandler = async (req, res) => {
     req.body.forEach((item) => {
         _postMessage(
             item.userId,
-            `Your teammate ${item.pto.OwnerName} on project <${item.instanceUrl}/${item.pm.Project__r.Id}|${item.pm.Project__r.Name}> is OOO from ${item.pto.Start_Date} for ${item.pto.No_of_PTO_Days} day(s).`
+            `${Md.emoji('tada')} Your teammate ${item.pto.OwnerName} on project <${item.instanceUrl}/${item.pm.Project__r.Id}|${
+                item.pm.Project__r.Name
+            }> is OOO from ${item.pto.Start_Date} for ${item.pto.No_of_PTO_Days} day(s).`
         );
     });
 
-    // switch (message.status) {
-    //     case 'New':
-    //         await _postNewTravelRequestToReviewMessage(
-    //             message.userId,
-    //             _convertMessageToTravelRequestObject(message),
-    //             message.instanceUrl
-    //         );
-    //         break;
-    //     case 'Rejected':
-    //         await _postMessage(
-    //             message.userId,
-    //             `Ops! Your travel request <${message.instanceUrl}/${message.id}|${message.name}> has been rejected.`
-    //         );
-    //         break;
-    //     default:
-    //         break;
-    // }
     // Send success message
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end('Message received successfully');
@@ -70,36 +51,6 @@ const salesforceMessageHandler = async (req, res) => {
 
 const _postMessage = async (userId, message) => {
     const msg = Message({ channel: userId, text: message });
-    await persistedClient.client.chat.postMessage(msg.buildToObject());
-};
-
-const _convertMessageToTravelRequestObject = (message) => {
-    return {
-        Id: message.id,
-        Name: message.name,
-        Description__c: message.description,
-        Origin__c: message.origin,
-        Destination__c: message.destination,
-        Start_Date__c: message.startDate,
-        End_Date__c: message.endDate,
-        Cost__c: message.cost,
-        Status__c: message.status,
-        Owner: {
-            Name: message.ownerName
-        }
-    };
-};
-
-const _postNewTravelRequestToReviewMessage = async (
-    userId,
-    request,
-    instanceUrl
-) => {
-    const msg = Message({
-        channel: userId,
-        text: 'You have new travel requests to review. Check the app home tab.'
-    });
-    appendPendingTravelRequestBlock(msg, request, instanceUrl, true);
     await persistedClient.client.chat.postMessage(msg.buildToObject());
 };
 
