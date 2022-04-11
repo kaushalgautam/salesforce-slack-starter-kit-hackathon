@@ -40,7 +40,7 @@ const salesforceMessageHandler = async (req, res) => {
     console.log(JSON.stringify(req.body));
 
     req.body.forEach((item) => {
-        await _postMessage(
+        _postMessage(
             item.userId,
             `Your teammate ${item.pto.OwnerName} on project <${item.instanceUrl}/${item.pm.Project__r.Id}|${item.pm.Project__r.Name}> is OOO from ${item.pto.Start_Date__c} day(s).`
         );
