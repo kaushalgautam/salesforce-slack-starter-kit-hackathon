@@ -38,7 +38,7 @@ const salesforceMessageHandler = async (req, res) => {
     req.body.forEach((item) => {
         _postMessage(
             item.userId,
-            `${Md.emoji('tada')} Your teammate ${item.pto.OwnerName} on project <${item.instanceUrl}/${item.pm.Project__r.Id}|${
+            `${Md.emoji('palm_tree')} Your teammate ${item.pto.OwnerName} on project <${item.instanceUrl}/${item.pm.Project__r.Id}|${
                 item.pm.Project__r.Name
             }> is OOO from ${item.pto.Start_Date} for ${item.pto.No_of_PTO_Days} day(s).`
         );
