@@ -28,11 +28,6 @@ const salesforceMessageHandler = async (req, res) => {
         return;
     }
 
-    // We can ensure the user is authorized because it was checked
-    // in Salesforce before sending the message,
-    // and we verified the HMAC on receival
-    const message = req.body[0];
-
     console.log(JSON.stringify(req.body));
 
     req.body.forEach((item) => {
