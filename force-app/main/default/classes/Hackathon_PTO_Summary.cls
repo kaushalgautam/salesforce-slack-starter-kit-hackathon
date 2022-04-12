@@ -10,11 +10,17 @@ global class Hackathon_PTO_Summary {
 	static List<String> invalidProjectPhases = new List<String>{ 'Closed', 'Closeout', 'On Hold' };
 	static List<String> validProjectTypes = new List<String>{ 'Time & Materials', 'Fixed Project' };
 
+	static String PTO_SUMMARY_SHORTCUT = 'summary_ptoShortcut';
+
 	@HttpGet
-	global static List<PTOSummary> doGet() {
+	global static SlackMessage doGet() {
 		RestRequest req = RestContext.request;
 		String userId = req.requestURI.substring(req.requestURI.lastIndexOf('/') + 1);
-		return getPTOSummariesForUser(userId);
+
+		SlackMessage response = new SlackMessage();
+		response.payload = JSON.serialize(getPTOSummariesForUser(userId));
+		response.type = PTO_SUMMARY_SHORTCUT;
+		return response;
 	}
 
 	public static List<PTOSummary> getPTOSummariesForUser(String userId) {
