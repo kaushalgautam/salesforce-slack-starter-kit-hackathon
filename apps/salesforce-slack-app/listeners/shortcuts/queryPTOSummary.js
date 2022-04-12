@@ -11,12 +11,8 @@ const getPTOSummaryString = (response) => {
     const thisWeek = moment().startOf('week').format('YYYY-MM-DD');
     const nextWeek = moment().startOf('week').add(7, 'days').format('YYYY-MM-DD');
 
-    console.log('response: \n\n\n');
-    console.log(response);
-    console.log('\n\n\n');
-
     // sort by weeks
-    var sortedByWeek = JSON.parse(response.payload).reduce((res, { ProjectName, PTOEntry }) => {
+    var sortedByWeek = response.reduce((res, { ProjectName, PTOEntry }) => {
         var startOfWeek = moment(PTOEntry.Start_Date__c, 'YYYY-MM-DD').startOf('week').format('YYYY-MM-DD');
         res[startOfWeek] = res[startOfWeek] || [];
         res[startOfWeek].push({
@@ -110,12 +106,14 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
             return console.error(err);
         }
         try {
+            console.log('response: \n\n\n');
             console.log(res);
-            console.log(res.length);
+            console.log('\n\n\n');
+
             let ptoSummaryText = '';
             // let projectWisePTOs = {};
-            if (res.length > 0) {
-                ptoSummaryText = getPTOSummaryString(res);
+            if (JSON.parse(res.payload).length > 0) {
+                ptoSummaryText = getPTOSummaryString(JSON.parse(res.payload));
 
                 let viewJson = Modal({ title: 'PTO Summary' })
                     .callbackId('showPTOSummary')
