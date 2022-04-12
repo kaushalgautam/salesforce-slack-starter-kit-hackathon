@@ -30,14 +30,20 @@ const salesforceMessageHandler = async (req, res) => {
 
     console.log(JSON.stringify(req.body));
 
-    req.body.forEach((item) => {
-        _postMessage(
-            item.userId,
-            `${Md.emoji('palm_tree')} Your teammate ${item.pto.OwnerName} on project <${item.instanceUrl}/${item.pm.Project__r.Id}|${
-                item.pm.Project__r.Name
-            }> is OOO from ${item.pto.Start_Date} for ${item.pto.No_of_PTO_Days} day(s).`
-        );
-    });
+    if (req.body.type === 'notification_immediatePto') {
+        let body = req.body.payload;
+        req.body.forEach((item) => {
+            _postMessage(
+                item.userId,
+                `${Md.emoji('palm_tree')} Your teammate ${item.pto.OwnerName} on project <${item.instanceUrl}/${item.pm.Project__r.Id}|${
+                    item.pm.Project__r.Name
+                }> is OOO from ${item.pto.Start_Date} for ${item.pto.No_of_PTO_Days} day(s).`
+            );
+        });
+    } else {
+        console.log('different type: ');
+        console.log(req);
+    }
 
     // Send success message
     res.writeHead(200, { 'Content-Type': 'text/html' });
