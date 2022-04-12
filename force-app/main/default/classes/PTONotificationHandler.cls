@@ -128,10 +128,10 @@ public without sharing class PTONotificationHandler implements Dispatcher.Handle
 	}
 
 	private static SlackMessage createMessage(String slackUserId, PTO_Entries__c pto, Project_Member__c pm) {
-		SlackMessage message;
+		NotificationMessage message;
 		if (slackUserId != null) {
 			// create message if user authenticated from slack
-			message = new SlackMessage();
+			message = new NotificationMessage();
 			message.pto = getPTOEntryWrapper(pto);
 			message.pm = pm;
 			message.userId = slackUserId;
@@ -150,7 +150,12 @@ public without sharing class PTONotificationHandler implements Dispatcher.Handle
 				' day(s) '
 			);
 		}
-		return message;
+
+		SlackMessage slackMessage = new SlackMessage();
+		slackMessage.payload = JSON.serialize(message);
+		slackMessage.type = 'notification_immediatePto';
+
+		return slackMessage;
 	}
 
 	private static PTO_Entry getPTOEntryWrapper(PTO_Entries__c pto) {
@@ -169,5 +174,12 @@ public without sharing class PTONotificationHandler implements Dispatcher.Handle
 		public date Start_Date;
 		public date End_Date;
 		public Integer No_of_PTO_Days;
+	}
+
+	public class NotificationMessage {
+		public PTONotificationHandler.PTO_Entry pto;
+		public Project_Member__c pm;
+		public String instanceUrl;
+		public String userId;
 	}
 }
