@@ -11,8 +11,12 @@ const getPTOSummaryString = (response) => {
     const thisWeek = moment().startOf('week').format('YYYY-MM-DD');
     const nextWeek = moment().startOf('week').add(7, 'days').format('YYYY-MM-DD');
 
+    console.log('response: \n\n\n');
+    console.log(response);
+    console.log('\n\n\n');
+
     // sort by weeks
-    var sortedByWeek = response.reduce((res, { ProjectName, PTOEntry }) => {
+    var sortedByWeek = JSON.parse(response.payload).reduce((res, { ProjectName, PTOEntry }) => {
         var startOfWeek = moment(PTOEntry.Start_Date__c, 'YYYY-MM-DD').startOf('week').format('YYYY-MM-DD');
         res[startOfWeek] = res[startOfWeek] || [];
         res[startOfWeek].push({
