@@ -28,7 +28,8 @@ const salesforceMessageHandler = async (req, res) => {
         return;
     }
 
-    console.log(JSON.stringify(req.body));
+    console.log('req.body:  ');
+    console.log(req.body);
 
     if (req.body.type === 'notification_immediatePto') {
         let body = JSON.parse(req.body.payload);
