@@ -10,7 +10,8 @@ public without sharing class PTONotificationHandler implements Dispatcher.Handle
 	public void handle() {
 		Map<Id, PTO_Entries__c> relevantPTOEntries = new Map<Id, PTO_Entries__c>();
 		Map<Id, PTO_Entries__c> userToPTOEntriesMap = new Map<Id, PTO_Entries__c>();
-		List<SlackMessage> messages = new List<SlackMessage>();
+		SlackMessage message = new SlackMessage();
+		List<NotificationMessage> notifications = new List<NotificationMessage>();
 
 		for (Id ptoId : Trigger.newMap.keySet()) {
 			if (
@@ -52,16 +53,17 @@ public without sharing class PTONotificationHandler implements Dispatcher.Handle
 				if (slackUserIdsBySalesforceUserId.containsKey(pm.Member__c)) {
 					PTO_Entries__c pto = userToPTOEntriesMap.get(userId);
 					String slackUserId = slackUserIdsBySalesforceUserId.get(pm.Member__c);
-					SlackMessage message = createMessage(slackUserId, pto, pm);
-					messages.add(message);
+					NotificationMessage notification = createMessage(slackUserId, pto, pm);
+					notifications.add(notification);
 				}
 			}
 		}
-		System.debug(messages);
 
-		if (messages.size() > 0) {
-			SlackService.postMessages(JSON.serialize(messages));
-		}
+		message.payload = JSON.serialize(notifications);
+		message.type = 'notification_immediatePto';
+		System.debug(message);
+
+		SlackService.postMessages(JSON.serialize(message));
 	}
 
 	private static Map<Id, List<Project_Member__c>> getUserIdToProjectMembersMap(List<Id> userIds) {
@@ -127,15 +129,15 @@ public without sharing class PTONotificationHandler implements Dispatcher.Handle
 		return slackUserIdsBySalesforceUserId;
 	}
 
-	private static SlackMessage createMessage(String slackUserId, PTO_Entries__c pto, Project_Member__c pm) {
-		NotificationMessage message;
+	private static NotificationMessage createMessage(String slackUserId, PTO_Entries__c pto, Project_Member__c pm) {
+		NotificationMessage notif;
 		if (slackUserId != null) {
-			// create message if user authenticated from slack
-			message = new NotificationMessage();
-			message.pto = getPTOEntryWrapper(pto);
-			message.pm = pm;
-			message.userId = slackUserId;
-			message.instanceUrl = URL.getSalesforceBaseUrl().toExternalForm();
+			// create notif if user authenticated from slack
+			notif = new NotificationMessage();
+			notif.pto = getPTOEntryWrapper(pto);
+			notif.pm = pm;
+			notif.userId = slackUserId;
+			notif.instanceUrl = URL.getSalesforceBaseUrl().toExternalForm();
 			System.debug(
 				'Hi ' +
 				slackUserId +
@@ -151,11 +153,11 @@ public without sharing class PTONotificationHandler implements Dispatcher.Handle
 			);
 		}
 
-		SlackMessage slackMessage = new SlackMessage();
-		slackMessage.payload = JSON.serialize(message);
-		slackMessage.type = 'notification_immediatePto';
+		//SlackMessage slackMessage = new SlackMessage();
+		//slackMessage.payload = JSON.serialize(message);
+		//slackMessage.type = 'notification_immediatePto';
 
-		return slackMessage;
+		return notif;
 	}
 
 	private static PTO_Entry getPTOEntryWrapper(PTO_Entries__c pto) {
