@@ -31,8 +31,8 @@ const salesforceMessageHandler = async (req, res) => {
     console.log(JSON.stringify(req.body));
 
     if (req.body.type === 'notification_immediatePto') {
-        let body = req.body.payload;
-        req.body.forEach((item) => {
+        let body = JSON.parse(req.body.payload);
+        body.forEach((item) => {
             _postMessage(
                 item.userId,
                 `${Md.emoji('palm_tree')} Your teammate ${item.pto.OwnerName} on project <${item.instanceUrl}/${item.pm.Project__r.Id}|${
