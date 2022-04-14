@@ -1,5 +1,9 @@
 const { Modal, Blocks } = require('slack-block-builder');
-var moment = require('moment'); // require
+var moment = require('moment');
+const { generate_pto_summary } = require('../../utils/pto-summary-generator');
+const { pto_summary_error } = require('../../user-interface/modals/pto-summary-error');
+const { pto_summary_empty } = require('../../user-interface/modals/pto-summary-empty');
+const { pto_summary_ok } = require('../../user-interface/modals/pto-summary-ok');
 
 const getPTOSummaryString = (response) => {
     const TIME_PERIODS = {
@@ -113,50 +117,52 @@ const getPTOSummary = async ({ shortcut, ack, client, context }) => {
             let ptoSummaryText = '';
             // let projectWisePTOs = {};
             if (JSON.parse(res.payload).length > 0) {
-                ptoSummaryText = getPTOSummaryString(JSON.parse(res.payload));
-
-                let viewJson = Modal({ title: 'PTO Summary' })
-                    .callbackId('showPTOSummary')
-                    .blocks([Blocks.Divider(), Blocks.Section({ text: ptoSummaryText })])
-                    .buildToJSON();
+                // ptoSummaryText = getPTOSummaryString(JSON.parse(res.payload));
+                ptoSummaryText = generate_pto_summary(JSON.parse(res.payload));
+                // let viewJson = Modal({ title: 'PTO Summary' })
+                //     .callbackId('showPTOSummary')
+                //     .blocks([Blocks.Divider(), Blocks.Section({
+                //         text: ptoSummaryText
+                //     })])
+                //     .buildToJSON();
 
                 client.views.open({
                     // Use the user ID associated with the shortcut
                     trigger_id: shortcut.trigger_id,
-                    view: viewJson
+                    view: pto_summary_ok(ptoSummaryText)
                 });
             } else {
-                let viewJson = Modal({ title: 'PTO Summary' })
-                    .callbackId('showPTOSummary')
-                    .blocks([
-                        Blocks.Divider(),
-                        Blocks.Section({
-                            text: 'No Team Members on PTO in this month.'
-                        })
-                    ])
-                    .buildToJSON();
+                // let viewJson = Modal({ title: 'PTO Summary' })
+                //     .callbackId('showPTOSummary')
+                //     .blocks([
+                //         Blocks.Divider(),
+                //         Blocks.Section({
+                //             text: 'No Team Members on PTO in this month.'
+                //         })
+                //     ])
+                //     .buildToJSON();
 
                 client.views.open({
                     // Use the user ID associated with the shortcut
                     trigger_id: shortcut.trigger_id,
-                    view: viewJson
+                    view: pto_summary_empty()
                 });
             }
         } catch (error) {
-            let viewJson = Modal({ title: 'PTO Summary' })
-                .callbackId('showPTOSummary')
-                .blocks([
-                    Blocks.Divider(),
-                    Blocks.Section({
-                        text: 'Something went Wrong \n' + JSON.stringify(error)
-                    })
-                ])
-                .buildToJSON();
+            // let viewJson = Modal({ title: 'PTO Summary' })
+            //     .callbackId('showPTOSummary')
+            //     .blocks([
+            //         Blocks.Divider(),
+            //         Blocks.Section({
+            //             text: 'Something went wrong \n' + JSON.stringify(error)
+            //         })
+            //     ])
+            //     .buildToJSON();
 
             client.views.open({
                 // Use the user ID associated with the shortcut
                 trigger_id: shortcut.trigger_id,
-                view: viewJson
+                view: pto_summary_error(error)
             });
             console.error(error);
         }

@@ -3,6 +3,7 @@ const CryptoJS = require('crypto-js');
 const persistedClient = require('../store/bolt-web-client');
 const { Md, Message } = require('slack-block-builder');
 const config = require('../config/config');
+const { generate_pto_summary } = require('../utils/pto-summary-generator');
 
 const salesforceMessageHandler = async (req, res) => {
     // Note:if using HTTPReceiver instead of ExpressReceiver, compute the body with raw-body as follows:
@@ -28,7 +29,7 @@ const salesforceMessageHandler = async (req, res) => {
         return;
     }
 
-    console.log('req.body:  ');
+    console.log('\n\n\nreq.body:  ');
     console.log(req.body);
 
     if (req.body.type === 'notification_immediatePto') {
@@ -41,6 +42,12 @@ const salesforceMessageHandler = async (req, res) => {
                 }> is OOO from ${item.pto.Start_Date} for ${item.pto.No_of_PTO_Days} day(s).`
             );
         });
+    } else if (req.body.type === 'summary_ptoShortcut') {
+        let payload = JSON.parse(req.body.payload);
+        let summaryString = generate_pto_summary(payload);
+        console.log('\n\n\nsummaryString');
+        console.log(summaryString);
+        _postMessage(req.body.userId, summaryString);
     } else {
         console.log('different type: ');
         console.log(req);
