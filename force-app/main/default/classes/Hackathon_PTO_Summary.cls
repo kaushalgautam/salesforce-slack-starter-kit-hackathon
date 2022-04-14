@@ -36,10 +36,13 @@ global class Hackathon_PTO_Summary {
 		System.debug('userIdToProjIds: ' + userIdToProjIds);
 
 		// get approved ptos of all members that are relevant
+
+		Date nextNDays = Date.today().addDays(45);
+
 		for (PTO_Entries__c pto : [
 			SELECT ID, OwnerId, Owner.Name, Start_Date__c, End_Date__c, No_of_PTO_Days__c
 			FROM PTO_Entries__c
-			WHERE OwnerId IN :userIdToProjIds.keySet() AND Status__c = 'Approved' AND Start_Date__c < NEXT_MONTH AND Start_Date__c >= TODAY
+			WHERE OwnerId IN :userIdToProjIds.keySet() AND Status__c = 'Approved' AND Start_Date__c < :nextNDays AND Start_Date__c >= TODAY
 		]) {
 			for (Id projectId : userIdToProjIds.get(pto.OwnerId)) {
 				PTOSummary newSummary = new PTOSummary();
