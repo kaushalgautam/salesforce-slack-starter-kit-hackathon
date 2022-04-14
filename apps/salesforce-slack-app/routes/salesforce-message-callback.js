@@ -45,8 +45,6 @@ const salesforceMessageHandler = async (req, res) => {
     } else if (req.body.type === 'summary_ptoShortcut') {
         let payload = JSON.parse(req.body.payload);
         let summaryString = generate_pto_summary(payload);
-        console.log('\n\n\nsummaryString');
-        console.log(summaryString);
         _postMessage(req.body.userId, summaryString);
     } else {
         console.log('different type: ');

@@ -84,9 +84,6 @@ const generate_pto_summary = (payload) => {
         }
         textString += `\n`;
     });
-
-    console.log(textString);
-
     return textString;
 };
 
