@@ -15,6 +15,21 @@ public class SlackService {
 		}
 	}
 
+	public static void postMessages_sync(String messagesJson) {
+		HttpResponse response = sendRequest(messagesJson);
+
+		if (response.getStatusCode() != 200) {
+			throw new SlackException(
+				'Failed to post messages to Slack: HTTP' +
+				response.getStatusCode() +
+				' ' +
+				response.getStatus() +
+				' - ' +
+				response.getBody()
+			);
+		}
+	}
+
 	@TestVisible
 	private static Bolt_App_Config__mdt getBoltAppRecord() {
 		Bolt_App_Config__mdt config = Bolt_App_Config__mdt.getInstance('BoltAppConfigHeroku');
@@ -32,7 +47,7 @@ public class SlackService {
 		// Get Bolt App URL and HMAC Key
 		Bolt_App_Config__mdt record = getBoltAppRecord();
 		Blob signature = Crypto.generateMac('HmacSHA256', Blob.valueOf(body), Blob.valueOf(record.HMACKey__c));
-
+		System.debug('signature: ' + signature);
 		HttpRequest request = new HttpRequest();
 		request.setEndpoint('callout:boltApp/salesforce/message');
 		request.setMethod('POST');
