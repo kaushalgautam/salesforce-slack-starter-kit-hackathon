@@ -4,7 +4,7 @@ const generate_pto_summary = (payload) => {
     const TIME_PERIODS = {
         THIS_WEEK: 'This Week',
         NEXT_WEEK: 'Next Week',
-        REST_OF_THE_MONTH: 'Rest Of The Month'
+        ON_THE_HORIZON: 'On The Horizon'
     };
 
     const thisWeek = moment().startOf('week').format('YYYY-MM-DD');
@@ -33,11 +33,11 @@ const generate_pto_summary = (payload) => {
             Object.defineProperty(sortedByWeek, TIME_PERIODS.NEXT_WEEK, Object.getOwnPropertyDescriptor(sortedByWeek, key));
             delete sortedByWeek[key];
         } else {
-            if (!(TIME_PERIODS.REST_OF_THE_MONTH in sortedByWeek)) {
-                sortedByWeek[TIME_PERIODS.REST_OF_THE_MONTH] = [];
+            if (!(TIME_PERIODS.ON_THE_HORIZON in sortedByWeek)) {
+                sortedByWeek[TIME_PERIODS.ON_THE_HORIZON] = [];
             }
             sortedByWeek[key].forEach((item) => {
-                sortedByWeek[TIME_PERIODS.REST_OF_THE_MONTH].push(item);
+                sortedByWeek[TIME_PERIODS.ON_THE_HORIZON].push(item);
             });
         }
     }
@@ -72,7 +72,7 @@ const generate_pto_summary = (payload) => {
                     });
                 }
                 break;
-            case TIME_PERIODS.REST_OF_THE_MONTH:
+            case TIME_PERIODS.ON_THE_HORIZON:
                 textString += `\n:calendar: *${time}*\n`;
                 for (const project in sortedByWeek[time]) {
                     textString += `\n• For ${project} \n`;
