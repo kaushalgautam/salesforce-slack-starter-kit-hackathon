@@ -2,6 +2,7 @@
 const { authorizationScreen, authorizationSuccessScreen } = require('../../user-interface/app-home');
 
 const appHomeOpenedCallback = async ({ client, event, body, context }) => {
+    console.log(event);
     if (event.tab !== 'home' && event.tab !== 'about') {
         // Ignore the `app_home_opened` event for everything
         // except for home screen as we don't support a conversational UI
