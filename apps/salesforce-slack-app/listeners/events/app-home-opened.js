@@ -1,11 +1,8 @@
 'use strict';
-const {
-    authorizationScreen,
-    authorizationSuccessScreen
-} = require('../../user-interface/app-home');
+const { authorizationScreen, authorizationSuccessScreen } = require('../../user-interface/app-home');
 
 const appHomeOpenedCallback = async ({ client, event, body, context }) => {
-    if (event.tab !== 'home') {
+    if (event.tab !== 'home' && event.tab !== 'about') {
         // Ignore the `app_home_opened` event for everything
         // except for home screen as we don't support a conversational UI
         return;
@@ -23,9 +20,7 @@ const appHomeOpenedCallback = async ({ client, event, body, context }) => {
             // Call views.publish with the built-in client
             await client.views.publish({
                 user_id: event.user,
-                view: authorizationScreen(
-                    `${process.env.HEROKU_URL}/oauthstart/${event.user}`
-                )
+                view: authorizationScreen(`${process.env.HEROKU_URL}/oauthstart/${event.user}`)
             });
         }
     } catch (error) {
