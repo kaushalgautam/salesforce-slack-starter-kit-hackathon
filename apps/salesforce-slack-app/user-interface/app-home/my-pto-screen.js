@@ -5,17 +5,22 @@ const { HomeTab, Blocks, Elements, Md } = require('slack-block-builder');
 const myPTOsScreen = (ptos, username, instanceUrl) => {
     const homeTab = HomeTab();
     // _addButtonsToHomeTab(homeTab);
+
+    headerText = `${Md.bold('All PTOs for ' + username)}`;
     homeTab.blocks(
-        Blocks.Header({
-            text: `All PTOs for ${username}`
+        Blocks.Section({
+            text: headerText
         }),
+        // Blocks.Header({
+        //     text: `All PTOs for ${ username }`
+        // }),
         Blocks.Divider()
     );
 
     if (ptos.totalSize === 0) {
         homeTab.blocks(
             Blocks.Section({
-                text: 'No existing travel requests.'
+                text: 'No upcoming PTOs for you.'
             })
         );
     }
@@ -24,11 +29,11 @@ const myPTOsScreen = (ptos, username, instanceUrl) => {
         if (ptoIndex > 0) {
             homeTab.blocks(Blocks.Divider());
         }
-        let ptoText = `${Md.emoji('surfer')} ${Md.bold('For: ')} ${pto.No_of_PTO_Days__c} day(s)\n\n`;
+        let ptoText = `${Md.emoji('surfer')} ${Md.bold('For: ')} ${pto.No_of_PTO_Days__c} day(s) \n\n`;
         const startDate = new Date(pto.Start_Date__c).toLocaleDateString('en-US');
         const endDate = new Date(pto.End_Date__c).toLocaleDateString('en-US');
-        ptoText += `${Md.emoji('calendar')} {Md.bold('From-To:')} ${startDate} - ${endDate}\n\n`;
-        ptoText += `${Md.emoji('eyes')} {Md.bold('Status:')} ${pto.Status__c} ${Md.emoji(getEmoji(pto.Status__c))}\n\n\n`;
+        ptoText += `${Md.emoji('calendar')} ${Md.bold('From-To:')} ${startDate} - ${endDate} \n\n`;
+        ptoText += `${Md.emoji('eyes')} ${Md.bold('Status:')} ${pto.Status__c} ${Md.emoji(getEmoji(pto.Status__c))} \n\n\n`;
         homeTab.blocks(
             Blocks.Section({
                 text: ptoText
@@ -36,7 +41,7 @@ const myPTOsScreen = (ptos, username, instanceUrl) => {
                 Elements.Button({
                     actionId: 'view-pto',
                     text: 'View Details',
-                    url: `${instanceUrl}/${pto.Id}`
+                    url: `${instanceUrl} /${pto.Id}`
                 })
             )
         );
