@@ -4,5 +4,6 @@ const { authorizationSuccessScreen } = require('./auth-success');
 
 module.exports = {
     authorizationScreen,
-    authorizationSuccessScreen
+    authorizationSuccessScreen,
+    myPTOsScreen
 };

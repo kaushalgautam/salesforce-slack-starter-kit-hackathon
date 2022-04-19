@@ -1,9 +1,10 @@
 'use strict';
 const { authorizationScreen, authorizationSuccessScreen } = require('../../user-interface/app-home');
+const { myPTOList } = require('../../utils/home-tab-callbacks');
 
 const appHomeOpenedCallback = async ({ client, event, body, context }) => {
     console.log(event);
-    if (event.tab !== 'home' && event.tab !== 'about') {
+    if (event.tab !== 'home') {
         // Ignore the `app_home_opened` event for everything
         // except for home screen as we don't support a conversational UI
         return;
@@ -12,11 +13,13 @@ const appHomeOpenedCallback = async ({ client, event, body, context }) => {
         if (context.hasAuthorized) {
             const conn = context.sfconnection;
             const currentuser = await conn.identity();
-            await client.views.publish({
-                // Use the user ID associated with the event
-                user_id: event.user,
-                view: authorizationSuccessScreen(currentuser.username)
-            });
+            // await client.views.publish({
+            //     // Use the user ID associated with the event
+            //     user_id: event.user,
+            //     view: authorizationSuccessScreen(currentuser.username)
+            // });
+
+            myPTOList(context, client, event.user);
         } else {
             // Call views.publish with the built-in client
             await client.views.publish({
