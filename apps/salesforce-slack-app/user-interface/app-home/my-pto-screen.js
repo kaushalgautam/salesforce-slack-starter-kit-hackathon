@@ -6,7 +6,7 @@ const myPTOsScreen = (ptos, username, instanceUrl) => {
     const homeTab = HomeTab();
     // _addButtonsToHomeTab(homeTab);
 
-    headerText = `${Md.bold('All PTOs for ' + username)}`;
+    let headerText = `${Md.bold('All PTOs for ' + username)}`;
     homeTab.blocks(
         Blocks.Section({
             text: headerText
@@ -29,10 +29,10 @@ const myPTOsScreen = (ptos, username, instanceUrl) => {
         if (ptoIndex > 0) {
             homeTab.blocks(Blocks.Divider());
         }
-        let ptoText = `${Md.emoji('surfer')} ${Md.bold('For: ')} ${pto.No_of_PTO_Days__c} day(s) \n\n`;
         const startDate = new Date(pto.Start_Date__c).toLocaleDateString('en-US');
         const endDate = new Date(pto.End_Date__c).toLocaleDateString('en-US');
-        ptoText += `${Md.emoji('calendar')} ${Md.bold('From-To:')} ${startDate} - ${endDate} \n\n`;
+        let ptoText = `${Md.emoji('calendar')} ${Md.bold('From-To:')} ${startDate} - ${endDate} \n\n`;
+        ptoText += `${Md.emoji('surfer')} ${Md.bold('For: ')} ${pto.No_of_PTO_Days__c} day(s) \n\n`;
         ptoText += `${Md.emoji('eyes')} ${Md.bold('Status:')} ${pto.Status__c} ${Md.emoji(getEmoji(pto.Status__c))} \n\n\n`;
         homeTab.blocks(
             Blocks.Section({
