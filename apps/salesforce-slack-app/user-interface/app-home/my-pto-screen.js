@@ -24,11 +24,11 @@ const myPTOsScreen = (ptos, username, instanceUrl) => {
         if (ptoIndex > 0) {
             homeTab.blocks(Blocks.Divider());
         }
-        let ptoText = `${Md.emoji(':surfer:')} ${Md.bold('For: ')} ${pto.No_of_PTO_Days__c} day(s)\n`;
+        let ptoText = `${Md.emoji('surfer')} ${Md.bold('For: ')} ${pto.No_of_PTO_Days__c} day(s)\n\n`;
         const startDate = new Date(pto.Start_Date__c).toLocaleDateString('en-US');
         const endDate = new Date(pto.End_Date__c).toLocaleDateString('en-US');
-        ptoText += `${Md.bold('From-To:')} ${startDate} - ${endDate}\n`;
-        ptoText += `${Md.bold('Status:')} ${pto.Status__c} ${Md.emoji(getEmoji(pto.Status__c))}\n`;
+        ptoText += `${Md.emoji('calendar')} {Md.bold('From-To:')} ${startDate} - ${endDate}\n\n`;
+        ptoText += `${Md.emoji('eyes')} {Md.bold('Status:')} ${pto.Status__c} ${Md.emoji(getEmoji(pto.Status__c))}\n\n\n`;
         homeTab.blocks(
             Blocks.Section({
                 text: ptoText
